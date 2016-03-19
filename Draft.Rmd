@@ -1,0 +1,23 @@
+---
+title: "Draft"
+output: html_document
+---
+
+### loading data
+```{r}
+df <- read.csv("all-semi-unique.csv")
+
+```
+### removing advertisments information
+```{r}
+cols <- grep("ad/*",names(df),value=F)
+df2 <- df[,-cols]
+```
+### checking for columns with only one value
+```{r}
+unique(df2$rd.rp.type)
+df2 <- subset(df2,select=-c(rd.rp.type))
+unique(df2$rd.img)
+unique(df2$rd.cl)
+df2 <- subset(df2,select=-c(rd.cl))
+```
