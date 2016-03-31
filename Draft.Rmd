@@ -25,3 +25,8 @@ df2 <- subset(df2,select=-c(rd.cl))
 ```{r}
 df2 <- subset(df2,select=-c(rd.img))
 ```
+### check if there is duplicates in rows
+```{r}
+df3 <- subset(df2,select=-c(rd.hr,rd.mn,rd.rp.hr,rd.rp.mn,crawl_date))
+df3 <- df3[!duplicated(df3),]
+```
