@@ -49,3 +49,11 @@ df2 <- mutate(df2, rp.date= tmp_date-hrs(rd.rp.hr)-mns(rd.rp.mn))
 df2 <- subset(df2,select=-c(rd.hr,rd.mn,rd.rp.hr,rd.rp.mn,crawl_date,tmp_date))
 df2 <- df2[!duplicated(df2),]
 ```
+### check for further duplicates in cmid
+```{r}
+length(unique(df2$rd.rp.cmid))
+```
+### accommodate for diffrences in seconds
+```{r}
+data <- subset(df2, !duplicated(df2[,'rd.rp.cmid']))
+```
