@@ -6,6 +6,7 @@ output: html_document
 
 ### loading data
 ```{r}
+library(dplyr)
 df <- read.csv("all-semi-unique.csv")
 
 ```
@@ -26,9 +27,25 @@ df2 <- subset(df2,select=-c(rd.cl))
 ```{r}
 df2 <- subset(df2,select=-c(rd.img))
 ```
-### check if there is duplicates in rows
+### check if for duplicates in rows
 ```{r}
 df3 <- subset(df2,select=-c(rd.hr,rd.mn,rd.rp.hr,rd.rp.mn,crawl_date))
 df3 <- df3[!duplicated(df3),]
 ```
-
+### add new columns for the dates of the road and comment
+```{r}
+x <- strptime(df2[,"crawl_date"],format = "%a %b %d %H:%M",tz = "UTC")
+hrs <- function(u) {
+ x <- u * 3600
+ return(x)
+}
+mns <- function(m) {
+ x <- m * 60
+ return(x)
+}
+df2$tmp_date <- x
+df2 <- mutate(df2, date= tmp_date-hrs(rd.hr)-mns(rd.mn))
+df2 <- mutate(df2, rp.date= tmp_date-hrs(rd.rp.hr)-mns(rd.rp.mn))
+df2 <- subset(df2,select=-c(rd.hr,rd.mn,rd.rp.hr,rd.rp.mn,crawl_date,tmp_date))
+df2 <- df2[!duplicated(df2),]
+```
