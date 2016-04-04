@@ -7,6 +7,7 @@ output: html_document
 ### loading data
 ```{r}
 library(dplyr)
+library(ggplot2)
 df <- read.csv("all-semi-unique.csv")
 
 ```
@@ -57,3 +58,21 @@ length(unique(df2$rd.rp.cmid))
 ```{r}
 data <- subset(df2, !duplicated(df2[,'rd.rp.cmid']))
 ```
+### examine the frequency for each status for the comments 
+```{r}
+qplot(rd.rp.stid,data = data)
+```
+\n
+the most used positive comment is "lazeez" and the most used negative one is "zeft" !
+### examine rows with comment status that is NA
+```{r}
+sum(is.na(data$rd.rp.stid))
+not.labeled <- data[is.na(data$rd.rp.stid),]
+```
+### create new status = 11 corresponds to clear
+```{r}
+data$rd.rp.stid <- ifelse(grepl("(.)*clear(.)*", data$rd.rp.cm), 11,data$rd.rp.stid)
+sum(is.na(data$rd.rp.stid))
+not.labeled <- data[is.na(data$rd.rp.stid),]
+```
+'''
