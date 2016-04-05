@@ -62,17 +62,40 @@ data <- subset(df2, !duplicated(df2[,'rd.rp.cmid']))
 ```{r}
 qplot(rd.rp.stid,data = data)
 ```
-\n
-the most used positive comment is "lazeez" and the most used negative one is "zeft" !
+
 ### examine rows with comment status that is NA
 ```{r}
 sum(is.na(data$rd.rp.stid))
 not.labeled <- data[is.na(data$rd.rp.stid),]
+```
+
+### examine the status  that corresponds to each status id
+```{r}
+head(data[ which(data$rd.rp.stid==1), ])
+head(data[ which(data$rd.rp.stid==2), ])
+head(data[ which(data$rd.rp.stid==3), ])
+head(data[ which(data$rd.rp.stid==4), ])
+head(data[ which(data$rd.rp.stid==5), ])
+head(data[ which(data$rd.rp.stid==6), ])
+head(data[ which(data$rd.rp.stid==7), ])
+head(data[ which(data$rd.rp.stid==8), ])
+head(data[ which(data$rd.rp.stid==9), ])
+head(data[ which(data$rd.rp.stid==10), ])
 ```
 ### create new status = 11 corresponds to clear
 ```{r}
 data$rd.rp.stid <- ifelse(grepl("(.)*clear(.)*", data$rd.rp.cm), 11,data$rd.rp.stid)
 sum(is.na(data$rd.rp.stid))
 not.labeled <- data[is.na(data$rd.rp.stid),]
+qplot(rd.rp.stid,data = data)
 ```
-'''
+
+### adding a column for positive comments (1,2,3 and 11)
+```{r}
+data2 <- data[!is.na(data$rd.rp.stid),]
+data2$pos.com <- ifelse(data2$rd.rp.stid == 1 | data2$rd.rp.stid == 2 | data2$rd.rp.stid == 3 | data2$rd.rp.stid == 11 , 1,0)
+```
+### adding a column for negative comments (4,5,7,8,9,10)
+```{r}
+data2$neg.com <- ifelse(data2$rd.rp.stid == 4 | data2$rd.rp.stid == 5 | data2$rd.rp.stid == 7 | data2$rd.rp.stid == 8 | data2$rd.rp.stid == 9 | data2$rd.rp.stid == 10 , 1,0)
+```
