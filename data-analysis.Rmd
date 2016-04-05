@@ -99,3 +99,11 @@ data2$pos.com <- ifelse(data2$rd.rp.stid == 1 | data2$rd.rp.stid == 2 | data2$rd
 ```{r}
 data2$neg.com <- ifelse(data2$rd.rp.stid == 4 | data2$rd.rp.stid == 5 | data2$rd.rp.stid == 7 | data2$rd.rp.stid == 8 | data2$rd.rp.stid == 9 | data2$rd.rp.stid == 10 , 1,0)
 ```
+### examine roads with most positive comments in general
+```{r}
+positive <- data2 %>% group_by(rd.ri) %>% summarise(sum.pos = sum(pos.com))
+ggplot(positive, aes(positive$rd.ri,positive$sum.pos )) +   geom_point()+ scale_x_continuous(breaks = round(seq(min(positive$rd.ri), max(positive$rd.ri), by = 100),1))
+positive[positive$sum.pos==max(positive$sum.pos),]
+z <- data2[data2$rd.ri==553,]
+qplot(rd.rp.stid,data = z)
+```
