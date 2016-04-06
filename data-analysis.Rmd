@@ -28,7 +28,7 @@ df2 <- subset(df2,select=-c(rd.cl))
 ```{r}
 df2 <- subset(df2,select=-c(rd.img))
 ```
-### check if for duplicates in rows
+### check for duplicates in rows
 ```{r}
 df3 <- subset(df2,select=-c(rd.hr,rd.mn,rd.rp.hr,rd.rp.mn,crawl_date))
 df3 <- df3[!duplicated(df3),]
@@ -71,16 +71,16 @@ not.labeled <- data[is.na(data$rd.rp.stid),]
 
 ### examine the status  that corresponds to each status id
 ```{r eval}
-head(data[ which(data$rd.rp.stid==1), ])
-head(data[ which(data$rd.rp.stid==2), ])
-head(data[ which(data$rd.rp.stid==3), ])
-head(data[ which(data$rd.rp.stid==4), ])
-head(data[ which(data$rd.rp.stid==5), ])
-head(data[ which(data$rd.rp.stid==6), ])
-head(data[ which(data$rd.rp.stid==7), ])
-head(data[ which(data$rd.rp.stid==8), ])
-head(data[ which(data$rd.rp.stid==9), ])
-head(data[ which(data$rd.rp.stid==10), ])
+t <- head(data[ which(data$rd.rp.stid==1), ])
+t <- head(data[ which(data$rd.rp.stid==2), ])
+t <- head(data[ which(data$rd.rp.stid==3), ])
+t <- head(data[ which(data$rd.rp.stid==4), ])
+t <- head(data[ which(data$rd.rp.stid==5), ])
+t <- head(data[ which(data$rd.rp.stid==6), ])
+t <- head(data[ which(data$rd.rp.stid==7), ])
+t <- head(data[ which(data$rd.rp.stid==8), ])
+t <- head(data[ which(data$rd.rp.stid==9), ])
+t <- head(data[ which(data$rd.rp.stid==10), ])
 ```
 ### examine stid = NA
 ```{r}
@@ -106,12 +106,12 @@ count(m[m$rd.rp.stid == 10,])
 data$rd.rp.stid <- ifelse(grepl("(.)*clear(.)*", data$rd.rp.cm), 1,data$rd.rp.stid)
 sum(is.na(data$rd.rp.stid))
 not.labeled <- data[is.na(data$rd.rp.stid),]
-qplot(rd.rp.stid,data = data)
+data2 <- data[!is.na(data$rd.rp.stid),]
+qplot(rd.rp.stid,data = data2)
 ```
 
 ### adding a column for positive comments (1,2,3)
 ```{r}
-data2 <- data[!is.na(data$rd.rp.stid),]
 data2$pos.com <- ifelse(data2$rd.rp.stid == 1 | data2$rd.rp.stid == 2 | data2$rd.rp.stid == 3 , 1,0)
 ```
 ### adding a column for negative comments (4,5,7,8,9,10)
@@ -134,6 +134,34 @@ data3$rd.nm <- as.character(data3$rd.nm)
 temp <- as.data.frame(do.call(rbind, strsplit(data3$rd.nm, ";")))
 data3 <- cbind(temp,data3)
 positive.areas <- data3 %>% group_by(V1) %>% summarise(sum.pos = sum(pos.com))
-ggplot(positive.areas, aes(row.names(positive.areas),positive.areas$sum.pos )) +   geom_point()
+#ggplot(positive.areas, aes(V1,positive.areas$sum.pos )) +   geom_point() + theme(axis.text.x  = element_text(angle=90, vjust=0.5))
 positive.areas[positive.areas$sum.pos == max(positive.areas$sum.pos),]
+negative.areas <- data3 %>% group_by(V1) %>% summarise(sum.neg = sum(neg.com))
+negative.areas[negative.areas$sum.neg == max(negative.areas$sum.neg),]
+```
+
+### seems like Da2ery is very popular :) BOTH positively and negatively :)
+### comparing positive comments to negative comments
+
+```{r}
+general <- cbind(positive.areas , negative.areas)
+View(general)
+general$pos <- general$sum.pos / (general$sum.pos+general$sum.neg)
+general$neg <- general$sum.neg / (general$sum.pos+general$sum.neg)
+general$total <- general$sum.pos + general$sum.neg
+pos <- general[general$pos > general$neg,]
+neg <- general[general$pos < general$neg,]
+slices <- neg$sum.neg
+lbls <- neg$V1
+pct <- round(slices/sum(neg$sum.neg)*100)
+lbls <- paste(lbls, pct) 
+lbls <- paste(lbls,"%",sep="") 
+pie(slices,labels = lbls, col=rainbow(length(lbls)),
+  	main="negative areas :( \n regarding number of negative comments")
+
+```
+
+### plot the percentage of negative comments for the negative areas
+```{r}
+ggplot(neg, aes(V1,(neg*100) )) +   geom_point() + theme(axis.text.x  = element_text(angle=90, vjust=0.5))
 ```
