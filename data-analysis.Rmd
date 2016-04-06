@@ -70,7 +70,7 @@ not.labeled <- data[is.na(data$rd.rp.stid),]
 ```
 
 ### examine the status  that corresponds to each status id
-```{r}
+```{r eval}
 head(data[ which(data$rd.rp.stid==1), ])
 head(data[ which(data$rd.rp.stid==2), ])
 head(data[ which(data$rd.rp.stid==3), ])
@@ -82,18 +82,37 @@ head(data[ which(data$rd.rp.stid==8), ])
 head(data[ which(data$rd.rp.stid==9), ])
 head(data[ which(data$rd.rp.stid==10), ])
 ```
-### create new status = 11 corresponds to clear
+### examine stid = NA
 ```{r}
-data$rd.rp.stid <- ifelse(grepl("(.)*clear(.)*", data$rd.rp.cm), 11,data$rd.rp.stid)
+na.stid <- data[is.na(data$rd.rp.stid) == TRUE,]
+```
+### comments containing "clear" sometimes have NA value for stid. examine other values given to it.
+```{r}
+m <- data[grepl("(.)*clear(.)*", data$rd.rp.cm) == TRUE,]
+m <- m[!is.na(m$rd.rp.stid),]
+count(m[m$rd.rp.stid == 1,])
+count(m[m$rd.rp.stid == 2,])
+count(m[m$rd.rp.stid == 3,])
+count(m[m$rd.rp.stid == 4,])
+count(m[m$rd.rp.stid == 5,])
+count(m[m$rd.rp.stid == 6,])
+count(m[m$rd.rp.stid == 7,])
+count(m[m$rd.rp.stid == 8,])
+count(m[m$rd.rp.stid == 9,])
+count(m[m$rd.rp.stid == 10,])
+```
+### replace stid that is equal to NA in "clear" comments with 1
+```{r}
+data$rd.rp.stid <- ifelse(grepl("(.)*clear(.)*", data$rd.rp.cm), 1,data$rd.rp.stid)
 sum(is.na(data$rd.rp.stid))
 not.labeled <- data[is.na(data$rd.rp.stid),]
 qplot(rd.rp.stid,data = data)
 ```
 
-### adding a column for positive comments (1,2,3 and 11)
+### adding a column for positive comments (1,2,3)
 ```{r}
 data2 <- data[!is.na(data$rd.rp.stid),]
-data2$pos.com <- ifelse(data2$rd.rp.stid == 1 | data2$rd.rp.stid == 2 | data2$rd.rp.stid == 3 | data2$rd.rp.stid == 11 , 1,0)
+data2$pos.com <- ifelse(data2$rd.rp.stid == 1 | data2$rd.rp.stid == 2 | data2$rd.rp.stid == 3 , 1,0)
 ```
 ### adding a column for negative comments (4,5,7,8,9,10)
 ```{r}
@@ -106,4 +125,15 @@ ggplot(positive, aes(positive$rd.ri,positive$sum.pos )) +   geom_point()+ scale_
 positive[positive$sum.pos==max(positive$sum.pos),]
 z <- data2[data2$rd.ri==553,]
 qplot(rd.rp.stid,data = z)
+```
+
+### examine the areas containg the roads
+```{r}
+data3 <- data2
+data3$rd.nm <- as.character(data3$rd.nm)
+temp <- as.data.frame(do.call(rbind, strsplit(data3$rd.nm, ";")))
+data3 <- cbind(temp,data3)
+positive.areas <- data3 %>% group_by(V1) %>% summarise(sum.pos = sum(pos.com))
+ggplot(positive.areas, aes(row.names(positive.areas),positive.areas$sum.pos )) +   geom_point()
+positive.areas[positive.areas$sum.pos == max(positive.areas$sum.pos),]
 ```
