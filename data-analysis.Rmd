@@ -153,7 +153,7 @@ pos <- general[general$pos > general$neg,]
 neg <- general[general$pos < general$neg,]
 slices <- neg$sum.neg
 lbls <- neg$V1
-pct <- round(slices/sum(neg$sum.neg)*100)
+pct <- round(slices/sum(neg$sum.neg)*100, digits = 2)
 lbls <- paste(lbls, pct) 
 lbls <- paste(lbls,"%",sep="") 
 pie(slices,labels = lbls, col=rainbow(length(lbls)),
