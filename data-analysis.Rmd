@@ -8,6 +8,7 @@ output: html_document
 ```{r}
 library(dplyr)
 library(ggplot2)
+library(reader)
 df <- read.csv("all-semi-unique.csv")
 
 ```
@@ -71,21 +72,22 @@ not.labeled <- data[is.na(data$rd.rp.stid),]
 
 ### examine the status  that corresponds to each status id
 ```{r eval}
-t <- head(data[ which(data$rd.rp.stid==1), ])
-t <- head(data[ which(data$rd.rp.stid==2), ])
-t <- head(data[ which(data$rd.rp.stid==3), ])
-t <- head(data[ which(data$rd.rp.stid==4), ])
-t <- head(data[ which(data$rd.rp.stid==5), ])
-t <- head(data[ which(data$rd.rp.stid==6), ])
-t <- head(data[ which(data$rd.rp.stid==7), ])
-t <- head(data[ which(data$rd.rp.stid==8), ])
-t <- head(data[ which(data$rd.rp.stid==9), ])
-t <- head(data[ which(data$rd.rp.stid==10), ])
+t <- (data[ which(data$rd.rp.stid==1), ])
+t <- (data[ which(data$rd.rp.stid==2), ])
+t <- (data[ which(data$rd.rp.stid==3), ])
+t <- (data[ which(data$rd.rp.stid==4), ])
+t <- (data[ which(data$rd.rp.stid==5), ])
+t <- (data[ which(data$rd.rp.stid==6), ])
+t <- (data[ which(data$rd.rp.stid==7), ])
+t <- (data[ which(data$rd.rp.stid==8), ])
+t <- (data[ which(data$rd.rp.stid==10), ])
 ```
+
 ### examine stid = NA
 ```{r}
 na.stid <- data[is.na(data$rd.rp.stid) == TRUE,]
 ```
+
 ### comments containing "clear" sometimes have NA value for stid. examine other values given to it.
 ```{r}
 m <- data[grepl("(.)*clear(.)*", data$rd.rp.cm) == TRUE,]
@@ -101,6 +103,7 @@ count(m[m$rd.rp.stid == 8,])
 count(m[m$rd.rp.stid == 9,])
 count(m[m$rd.rp.stid == 10,])
 ```
+
 ### replace stid that is equal to NA in "clear" comments with 1
 ```{r}
 data$rd.rp.stid <- ifelse(grepl("(.)*clear(.)*", data$rd.rp.cm), 1,data$rd.rp.stid)
@@ -114,17 +117,30 @@ qplot(rd.rp.stid,data = data2)
 ```{r}
 data2$pos.com <- ifelse(data2$rd.rp.stid == 1 | data2$rd.rp.stid == 2 | data2$rd.rp.stid == 3 , 1,0)
 ```
+
 ### adding a column for negative comments (4,5,7,8,9,10)
 ```{r}
 data2$neg.com <- ifelse(data2$rd.rp.stid == 4 | data2$rd.rp.stid == 5 | data2$rd.rp.stid == 7 | data2$rd.rp.stid == 8 | data2$rd.rp.stid == 9 | data2$rd.rp.stid == 10 , 1,0)
 ```
-### examine roads with most positive comments in general
+
+### examine roads with the most positive comments in general
 ```{r}
 positive <- data2 %>% group_by(rd.ri) %>% summarise(sum.pos = sum(pos.com))
 ggplot(positive, aes(positive$rd.ri,positive$sum.pos )) +   geom_point()+ scale_x_continuous(breaks = round(seq(min(positive$rd.ri), max(positive$rd.ri), by = 100),1))
 positive[positive$sum.pos==max(positive$sum.pos),]
 z <- data2[data2$rd.ri==553,]
 qplot(rd.rp.stid,data = z)
+```
+
+### examine roads with the most negative comments in general
+```{r}
+negative <- data2 %>% group_by(rd.ri) %>% summarise(sum.neg = sum(neg.com))
+ggplot(negative, aes(negative$rd.ri,negative$sum.neg )) +   geom_point()+ scale_x_continuous(breaks = round(seq(min(negative$rd.ri), max(negative$rd.ri), by = 100),1))
+negative[negative$sum.neg==max(negative$sum.neg),]
+zn <- data2[data2$rd.ri==31,]
+qplot(rd.rp.stid,data = zn)
+#zn2 <- zn %>% group_by(format(rp.date, '%Y-%m-%d %H')) %>% filter(rd.rp.stid == max(rd.rp.stid))
+#ggplot(zn2, aes(rp.date,rd.rp.stid)) +   geom_point() + theme(axis.text.x  = element_text(angle=90, vjust=0.5))
 ```
 
 ### examine the areas containg the roads
@@ -142,7 +158,6 @@ negative.areas[negative.areas$sum.neg == max(negative.areas$sum.neg),]
 
 ### seems like Da2ery is very popular :) BOTH positively and negatively :)
 ### comparing positive comments to negative comments
-
 ```{r}
 general <- cbind(positive.areas , negative.areas)
 View(general)
