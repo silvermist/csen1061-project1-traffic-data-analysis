@@ -139,8 +139,6 @@ ggplot(negative, aes(negative$rd.ri,negative$sum.neg )) +   geom_point()+ scale_
 negative[negative$sum.neg==max(negative$sum.neg),]
 zn <- data2[data2$rd.ri==31,]
 qplot(rd.rp.stid,data = zn)
-#zn2 <- zn %>% group_by(format(rp.date, '%Y-%m-%d %H')) %>% filter(rd.rp.stid == max(rd.rp.stid))
-#ggplot(zn2, aes(rp.date,rd.rp.stid)) +   geom_point() + theme(axis.text.x  = element_text(angle=90, vjust=0.5))
 ```
 
 ### examine the areas containg the roads
@@ -150,7 +148,6 @@ data3$rd.nm <- as.character(data3$rd.nm)
 temp <- as.data.frame(do.call(rbind, strsplit(data3$rd.nm, ";")))
 data3 <- cbind(temp,data3)
 positive.areas <- data3 %>% group_by(V1) %>% summarise(sum.pos = sum(pos.com))
-#ggplot(positive.areas, aes(V1,positive.areas$sum.pos )) +   geom_point() + theme(axis.text.x  = element_text(angle=90, vjust=0.5))
 positive.areas[positive.areas$sum.pos == max(positive.areas$sum.pos),]
 negative.areas <- data3 %>% group_by(V1) %>% summarise(sum.neg = sum(neg.com))
 negative.areas[negative.areas$sum.neg == max(negative.areas$sum.neg),]
