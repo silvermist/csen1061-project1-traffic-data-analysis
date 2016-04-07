@@ -176,4 +176,12 @@ pie(slices,labels = lbls, col=rainbow(length(lbls)),
 ### plot the percentage of negative comments for the negative areas
 ```{r}
 ggplot(neg, aes(V1,(neg*100) )) +   geom_point() + theme(axis.text.x  = element_text(angle=90, vjust=0.5))
+
 ```
+### number of reports for a specific hour ("UTC")
+```{r}
+data3$hour <- format(data3$rp.date, '%H')
+m <- data3 %>% group_by(hour) %>% summarise(reports = length(rd.rp.stid))
+ggplot(m, aes(hour, reports)) +   geom_point()
+```
+
