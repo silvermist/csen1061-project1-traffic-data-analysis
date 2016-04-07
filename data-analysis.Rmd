@@ -149,6 +149,7 @@ head(positive)
 ggplot(positive, aes(positive$rd.ri,positive$sum.pos )) +   geom_point()+ scale_x_continuous(breaks = round(seq(min(positive$rd.ri), max(positive$rd.ri), by = 100),1))
 positive[positive$sum.pos==max(positive$sum.pos),]
 z <- data2[data2$rd.ri==553,]
+unique(z$rd.nm)
 qplot(rd.rp.stid,data = z)
 ```
 
@@ -159,6 +160,7 @@ head(negative)
 ggplot(negative, aes(negative$rd.ri,negative$sum.neg )) +   geom_point()+ scale_x_continuous(breaks = round(seq(min(negative$rd.ri), max(negative$rd.ri), by = 100),1))
 negative[negative$sum.neg==max(negative$sum.neg),]
 zn <- data2[data2$rd.ri==166,]
+unique(zn$rd.nm)
 qplot(rd.rp.stid,data = zn)
 ```
 
@@ -206,6 +208,6 @@ ggplot(neg, aes(V1,(neg*100) )) +   geom_point() + theme(axis.text.x  = element_
 ```{r}
 data3$hour <- format(data3$rp.date, '%H')
 m <- data3 %>% group_by(hour) %>% summarise(reports = length(rd.rp.stid))
-ggplot(m, aes(hour, reports)) +   geom_point()
+ggplot(m, aes(hour, reports)) +   geom_point() 
 ```
 
